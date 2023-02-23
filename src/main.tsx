@@ -1,28 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom/client';
-import { useFetch } from './hooks/use-fetch';
+import { createContextState } from './utils/context';
 
-// DEMO
+function useCount() {
+  const [cnt, setCnt] = useState(5);
 
-type Todo = {
-  id: number;
-  userId: number;
-  title: string;
-  completed: boolean;
-};
+  const inc = () => setCnt((prev) => prev + 1);
 
-const baseURL = 'https://jsonplaceholder.typicode.com';
+  return { cnt, inc };
+}
+
+const [useCountCtx, CountProvider] = createContextState(useCount, {
+  hookName: 'useCountCtx',
+  providerName: 'CountProvider',
+});
+
+function Inner() {
+  const res = useCountCtx();
+
+  return <button onClick={res.inc}>{res.cnt}</button>;
+}
 
 function App() {
-  const { data, isLoading, isError } = useFetch<Todo[]>({
-    fetchFn: () => fetch(`${baseURL}/todos`).then((res) => res.json()),
-    depsKey: [],
-  });
-
-  if (isLoading) return <div>Loading</div>;
-  if (isError) return <div>Error</div>;
-
-  return <div>{JSON.stringify(data)}</div>;
+  return (
+    <CountProvider>
+      <Inner />
+    </CountProvider>
+  );
 }
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
