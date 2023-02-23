@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { useFetch } from './use-fetch';
+import { useFetch } from './hooks/use-fetch';
 
 // DEMO
 
