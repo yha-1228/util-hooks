@@ -1,0 +1,90 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:tailwindcss/recommended",
+    "prettier"
+  ],
+  "overrides": [],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "plugins": ["react", "@typescript-eslint", "import", "tailwindcss"],
+  "rules": {
+    "dot-notation": "warn",
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "ignoreRestSiblings": true,
+        "destructuredArrayIgnorePattern": "^_"
+      }
+    ],
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "spaced-comment": ["warn", "always", { "markers": ["/"] }],
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-no-useless-fragment": ["warn", { "allowExpressions": true }],
+    "react/jsx-curly-brace-presence": "warn",
+    "react/jsx-boolean-value": "warn",
+    "react/prop-types": "off",
+    "react/self-closing-comp": "warn",
+    "react/jsx-fragments": "warn",
+    "react/hook-use-state": "warn",
+    "@typescript-eslint/no-inferrable-types": "warn",
+    "@typescript-eslint/naming-convention": [
+      "warn",
+      { "selector": "typeAlias", "format": ["PascalCase"] },
+      { "selector": "interface", "format": ["PascalCase"] }
+    ],
+    "no-var": "error",
+    "prefer-const": "warn",
+    "import/no-cycle": "error",
+    "no-useless-rename": "warn",
+    "no-extra-boolean-cast": "off",
+    "no-duplicate-imports": "warn",
+    "tailwindcss/no-custom-classname": "off",
+    "import/newline-after-import": ["warn", { "count": 1 }],
+    "import/order": [
+      "warn",
+      {
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          "unknown",
+          "parent",
+          "sibling",
+          "index",
+          "object",
+          "type"
+        ],
+        "pathGroups": [
+          {
+            "pattern": "react",
+            "group": "builtin",
+            "position": "before"
+          }
+        ],
+        "pathGroupsExcludedImportTypes": ["react"],
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        }
+      }
+    ]
+  }
+}
