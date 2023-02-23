@@ -28,7 +28,7 @@ const compose = (children: ReactNode, ...elements: JSX.Element[]) => {
  */
 export function withCompose(...elements: JSX.Element[]) {
   const Composed: React.FC<React.PropsWithChildren> = ({ children }) => {
-    return <>{compose(children, ...elements)}</>;
+    return compose(children, ...elements);
   };
 
   return Composed;
