@@ -31,29 +31,6 @@ export const createContext = <T,>(options?: CreateContextOptions<T>) => {
   return [Context, useContext] as const;
 };
 
-/**
- * Convert hook to context and provider. (no args)
- *
- * @returns `[useSomeHook, SomeProvider]`
- */
-export function createContextState<HookResult>(
-  useHook: () => HookResult,
-  debugOptions?: HookDebugOptions
-): readonly [() => HookResult, React.FC<React.PropsWithChildren>];
-
-/**
- * Convert hook to context and provider. (with args)
- *
- * @returns `[useSomeHook, SomeProvider]`
- */
-export function createContextState<HookOption, HookResult>(
-  useHook: (option: HookOption) => HookResult,
-  debugOptions?: HookDebugOptions
-): readonly [
-  () => HookResult,
-  React.FC<React.PropsWithChildren<{ option: HookOption }>>
-];
-
 export function createContextState<HookOption, HookResult>(
   useHook: (option: HookOption) => HookResult,
   debugOptions?: HookDebugOptions
@@ -67,7 +44,7 @@ export function createContextState<HookOption, HookResult>(
     providerName: debugOptions?.providerName,
   });
 
-  const Provider: React.FC<React.PropsWithChildren<{ option?: HookOption }>> = (
+  const Provider: React.FC<React.PropsWithChildren<{ option: HookOption }>> = (
     props
   ) => {
     const { children, option } = props;
