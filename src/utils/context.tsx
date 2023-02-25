@@ -51,7 +51,7 @@ export function createContextState<HookOption, HookResult>(
   debugOptions?: HookDebugOptions
 ): readonly [
   () => HookResult,
-  React.FC<React.PropsWithChildren<{ option?: HookOption }>>
+  React.FC<React.PropsWithChildren<{ option: HookOption }>>
 ];
 
 export function createContextState<HookOption, HookResult>(
