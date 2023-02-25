@@ -31,35 +31,31 @@ export const createContext = <T,>(options?: CreateContextOptions<T>) => {
   return [Context, useContext] as const;
 };
 
-type HookType<HookOption, HookResult> = (option: HookOption) => HookResult;
-type VoidHookType<HookResult> = () => HookResult;
-type ProviderType<HookOption> = React.FC<
-  React.PropsWithChildren<{ option?: HookOption }>
->;
-type VoidProviderType = React.FC<React.PropsWithChildren>;
-
 /**
  * Convert hook to context and provider. (no args)
  *
  * @returns `[useSomeHook, SomeProvider]`
  */
 export function createContextState<HookResult>(
-  useHook: VoidHookType<HookResult> | VoidHookType<HookResult>,
+  useHook: () => HookResult,
   debugOptions?: HookDebugOptions
-): readonly [() => HookResult, VoidProviderType];
+): readonly [() => HookResult, React.FC<React.PropsWithChildren>];
 
 /**
- * Convert hook to context and provider.
+ * Convert hook to context and provider. (with args)
  *
  * @returns `[useSomeHook, SomeProvider]`
  */
 export function createContextState<HookOption, HookResult>(
-  useHook: HookType<HookOption, HookResult> | VoidHookType<HookResult>,
+  useHook: (option: HookOption) => HookResult,
   debugOptions?: HookDebugOptions
-): readonly [() => HookResult, ProviderType<HookOption>];
+): readonly [
+  () => HookResult,
+  React.FC<React.PropsWithChildren<{ option?: HookOption }>>
+];
 
 export function createContextState<HookOption, HookResult>(
-  useHook: HookType<HookOption, HookResult> | VoidHookType<HookResult>,
+  useHook: (option: HookOption) => HookResult,
   debugOptions?: HookDebugOptions
 ) {
   if (!debugOptions?.providerName) {
@@ -71,7 +67,9 @@ export function createContextState<HookOption, HookResult>(
     providerName: debugOptions?.providerName,
   });
 
-  const Provider: ProviderType<HookOption> = (props) => {
+  const Provider: React.FC<React.PropsWithChildren<{ option?: HookOption }>> = (
+    props
+  ) => {
     const { children, option } = props;
     const hookValue = useHook(option as HookOption);
 
