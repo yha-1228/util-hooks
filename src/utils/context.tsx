@@ -31,8 +31,13 @@ export const createContext = <T,>(options?: CreateContextOptions<T>) => {
   return [Context, useContext] as const;
 };
 
-export function createContextState<HookOption, HookResult>(
+export function createContextState<
+  HookOption,
+  SetterKey extends string,
+  HookResult
+>(
   useHook: (option: HookOption) => HookResult,
+  setterKey: SetterKey,
   debugOptions?: HookDebugOptions
 ) {
   if (!debugOptions?.providerName) {
@@ -44,13 +49,14 @@ export function createContextState<HookOption, HookResult>(
     providerName: debugOptions?.providerName,
   });
 
-  const Provider: React.FC<React.PropsWithChildren<{ option: HookOption }>> = (
-    props
-  ) => {
-    const { children, option } = props;
-    const hookValue = useHook(option as HookOption);
+  const Provider: React.FC<
+    React.PropsWithChildren<Record<SetterKey, HookOption>>
+  > = (props) => {
+    const hookValue = useHook(props[setterKey]);
 
-    return <Context.Provider value={hookValue}>{children}</Context.Provider>;
+    return (
+      <Context.Provider value={hookValue}>{props.children}</Context.Provider>
+    );
   };
 
   Provider.displayName = debugOptions?.providerName;
