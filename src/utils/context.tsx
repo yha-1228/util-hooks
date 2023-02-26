@@ -31,15 +31,51 @@ export const createContext = <T,>(options?: CreateContextOptions<T>) => {
   return [Context, useContext] as const;
 };
 
+export function createContextState<HookResult, SetterKey extends string>(
+  useHook: () => HookResult,
+  setterKey: SetterKey,
+  debugOptions?: HookDebugOptions
+): readonly [() => HookResult, React.FC<React.PropsWithChildren>];
+
 export function createContextState<
   HookOption,
-  SetterKey extends string,
-  HookResult
+  HookResult,
+  SetterKey extends string
+>(
+  useHook: (option?: HookOption) => HookResult,
+  setterKey: SetterKey,
+  debugOptions?: HookDebugOptions
+): readonly [
+  () => HookResult,
+  React.FC<React.PropsWithChildren<{ [k in SetterKey]?: HookOption }>>
+];
+
+export function createContextState<
+  HookOption,
+  HookResult,
+  SetterKey extends string
+>(
+  useHook: (option: HookOption) => HookResult,
+  setterKey: SetterKey,
+  debugOptions?: HookDebugOptions
+): readonly [
+  () => HookResult,
+  React.FC<React.PropsWithChildren<{ [k in SetterKey]: HookOption }>>
+];
+
+export function createContextState<
+  HookOption,
+  HookResult,
+  SetterKey extends string
 >(
   useHook: (option: HookOption) => HookResult,
   setterKey: SetterKey,
   debugOptions?: HookDebugOptions
 ) {
+  if (useHook.length > 1) {
+    throw new Error('Hook args must be up to one');
+  }
+
   if (!debugOptions?.providerName) {
     console.warn('Please set provider name.');
   }
@@ -50,7 +86,7 @@ export function createContextState<
   });
 
   const Provider: React.FC<
-    React.PropsWithChildren<Record<SetterKey, HookOption>>
+    React.PropsWithChildren<{ [k in SetterKey]: HookOption }>
   > = (props) => {
     const hookValue = useHook(props[setterKey]);
 
