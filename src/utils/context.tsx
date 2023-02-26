@@ -31,12 +31,6 @@ export const createContext = <T,>(options?: CreateContextOptions<T>) => {
   return [Context, useContext] as const;
 };
 
-export function createContextState<HookResult, SetterKey extends string>(
-  useHook: () => HookResult,
-  setterKey: SetterKey,
-  debugOptions?: HookDebugOptions
-): readonly [() => HookResult, React.FC<React.PropsWithChildren>];
-
 export function createContextState<
   HookOption,
   HookResult,
