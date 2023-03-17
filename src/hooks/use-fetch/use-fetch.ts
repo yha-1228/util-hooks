@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import {
   judgeIsError,
   judgeIsLoading,
@@ -18,31 +18,31 @@ function useFetch<Data>(options: UseFetchOptions<Data>): UseFetchResult<Data> {
     onFinally,
   } = options;
 
-  const savedFetchFn = useRef<UseFetchOptions<Data>['fetchFn']>();
+  const savedFetchFn = React.useRef(fetchFn);
 
-  useEffect(() => {
+  React.useEffect(() => {
     savedFetchFn.current = fetchFn;
   }, [fetchFn]);
 
-  const savedOnSuccess = useRef<UseFetchOptions<Data>['onSuccess']>();
+  const savedOnSuccess = React.useRef(onSuccess);
 
-  useEffect(() => {
+  React.useEffect(() => {
     savedOnSuccess.current = onSuccess;
   }, [onSuccess]);
 
-  const savedOnError = useRef<UseFetchOptions<Data>['onError']>();
+  const savedOnError = React.useRef(onError);
 
-  useEffect(() => {
+  React.useEffect(() => {
     savedOnError.current = onError;
   }, [onError]);
 
-  const savedOnFinally = useRef<UseFetchOptions<Data>['onFinally']>();
+  const savedOnFinally = React.useRef(onFinally);
 
-  useEffect(() => {
+  React.useEffect(() => {
     savedOnFinally.current = onFinally;
   }, [onFinally]);
 
-  const [state, setState] = useState<UseFetchState<Data>>({
+  const [state, setState] = React.useState<UseFetchState<Data>>({
     data: initialData,
     isFetching: false,
     error: undefined,
@@ -53,8 +53,6 @@ function useFetch<Data>(options: UseFetchOptions<Data>): UseFetchResult<Data> {
   };
 
   const refetch = async () => {
-    if (!savedFetchFn.current) return;
-
     setState((prev) => ({ ...prev, isFetching: true }));
 
     try {
@@ -74,14 +72,12 @@ function useFetch<Data>(options: UseFetchOptions<Data>): UseFetchResult<Data> {
     }
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!enabled) return;
 
     let ignore = false;
 
     const fetch = async () => {
-      if (!savedFetchFn.current) return;
-
       setState((prev) => ({ ...prev, isFetching: true }));
 
       try {
