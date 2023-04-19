@@ -1,21 +1,13 @@
 import { useState } from 'react';
 
-type UseCounterResult = {
-  count: number;
-  setCount: React.Dispatch<React.SetStateAction<number>>;
-  increment: () => void;
-  decrement: () => void;
-  reset: () => void;
-};
-
-export function useCounter(initial = 0): UseCounterResult {
+export function useCounter(initial = 0) {
   const [count, setCount] = useState(initial);
 
-  const increment = () => setCount((prev) => prev + 1);
+  const add = (ammount = 1) => setCount((prev) => prev + ammount);
 
-  const decrement = () => setCount((prev) => prev - 1);
+  const sub = (ammount = 1) => setCount((prev) => prev - ammount);
 
   const reset = () => setCount(initial);
 
-  return { count, setCount, increment, decrement, reset };
+  return [count, { setCount, add, sub, reset }] as const;
 }
