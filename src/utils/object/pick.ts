@@ -1,4 +1,4 @@
-function pickBy<T extends object, K extends keyof T>(object: T, keys: K[]) {
+function pick<T extends object, K extends keyof T>(object: T, keys: K[]) {
   const result = { ...object };
 
   Object.keys(object).forEach((key) => {
@@ -10,4 +10,4 @@ function pickBy<T extends object, K extends keyof T>(object: T, keys: K[]) {
   return result as Pick<T, K>;
 }
 
-export { pickBy };
+export { pick };
