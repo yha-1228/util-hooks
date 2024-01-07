@@ -1,8 +1,8 @@
-import React from 'react';
+import { DependencyList, useRef, useEffect, useState } from 'react';
 
 export type UseFetchOptions<Data> = {
   fetchFn: () => Promise<Data>;
-  depsKey?: React.DependencyList;
+  depsKey?: DependencyList;
   enabled?: boolean;
   initialData?: Data;
 };
@@ -94,13 +94,13 @@ function useFetch<Data>(options: UseFetchOptions<Data>): UseFetchResult<Data> {
     initialData = undefined,
   } = options;
 
-  const savedFetchFn = React.useRef(fetchFn);
+  const savedFetchFn = useRef(fetchFn);
 
-  React.useEffect(() => {
+  useEffect(() => {
     savedFetchFn.current = fetchFn;
   }, [fetchFn]);
 
-  const [state, setState] = React.useState<UseFetchState<Data>>({
+  const [state, setState] = useState<UseFetchState<Data>>({
     data: initialData,
     isFetching: false,
     error: undefined,
@@ -126,7 +126,7 @@ function useFetch<Data>(options: UseFetchOptions<Data>): UseFetchResult<Data> {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!enabled) return;
 
     let ignore = false;
