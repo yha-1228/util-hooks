@@ -1,18 +1,13 @@
-import React from 'react';
+import { EffectCallback, useRef, useEffect } from 'react';
 
-export function useEffectOnce(handlar: () => void) {
-  const savedHandlar = React.useRef(handlar);
+export function useEffectOnce(effect: EffectCallback) {
+  const doneRef = useRef(false);
 
-  React.useEffect(() => {
-    savedHandlar.current = handlar;
-  }, [handlar]);
-
-  const done = React.useRef(false);
-
-  React.useEffect(() => {
-    if (!done.current) {
-      savedHandlar.current();
-      done.current = true;
+  useEffect(() => {
+    if (!doneRef.current) {
+      effect();
+      doneRef.current = true;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 }
