@@ -16,9 +16,7 @@ class UnfedinedStatusError extends Error {
   constructor(...params: Parameters<ErrorConstructor>) {
     super(...params);
 
-    // @ts-expect-error Maintains proper stack trace for where our error was thrown (only available on V8)
     if (Error.captureStackTrace) {
-      // @ts-expect-error Maintains proper stack trace for where our error was thrown (only available on V8)
       Error.captureStackTrace(this, UnfedinedStatusError);
     }
 
