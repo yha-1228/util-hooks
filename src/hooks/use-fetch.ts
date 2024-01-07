@@ -5,9 +5,6 @@ export type UseFetchOptions<Data> = {
   depsKey?: React.DependencyList;
   enabled?: boolean;
   initialData?: Data;
-  onSuccess?: (data: Data) => void;
-  onError?: (error: Error) => void;
-  onFinally?: () => void;
 };
 
 export type UseFetchState<Data = unknown> = {
@@ -95,9 +92,6 @@ function useFetch<Data>(options: UseFetchOptions<Data>): UseFetchResult<Data> {
     depsKey = [],
     enabled = true,
     initialData = undefined,
-    onSuccess,
-    onError,
-    onFinally,
   } = options;
 
   const savedFetchFn = React.useRef(fetchFn);
@@ -105,24 +99,6 @@ function useFetch<Data>(options: UseFetchOptions<Data>): UseFetchResult<Data> {
   React.useEffect(() => {
     savedFetchFn.current = fetchFn;
   }, [fetchFn]);
-
-  const savedOnSuccess = React.useRef(onSuccess);
-
-  React.useEffect(() => {
-    savedOnSuccess.current = onSuccess;
-  }, [onSuccess]);
-
-  const savedOnError = React.useRef(onError);
-
-  React.useEffect(() => {
-    savedOnError.current = onError;
-  }, [onError]);
-
-  const savedOnFinally = React.useRef(onFinally);
-
-  React.useEffect(() => {
-    savedOnFinally.current = onFinally;
-  }, [onFinally]);
 
   const [state, setState] = React.useState<UseFetchState<Data>>({
     data: initialData,
@@ -140,17 +116,13 @@ function useFetch<Data>(options: UseFetchOptions<Data>): UseFetchResult<Data> {
     try {
       const data = await savedFetchFn.current();
       setState({ data, isFetching: false, error: undefined });
-      savedOnSuccess.current?.(data);
     } catch (_error) {
       if (_error instanceof Error) {
         const error = _error as Error;
         setState((prev) => ({ ...prev, isFetching: false, error }));
-        savedOnError.current?.(_error);
       } else {
         throw _error;
       }
-    } finally {
-      savedOnFinally.current?.();
     }
   };
 
@@ -166,20 +138,16 @@ function useFetch<Data>(options: UseFetchOptions<Data>): UseFetchResult<Data> {
         const data = await savedFetchFn.current();
         if (!ignore) {
           setState({ data, isFetching: false, error: undefined });
-          savedOnSuccess.current?.(data);
         }
       } catch (_error) {
         if (_error instanceof Error) {
           const error = _error as Error;
           if (!ignore) {
             setState((prev) => ({ ...prev, isFetching: false, error }));
-            savedOnError.current?.(_error);
           }
         } else {
           throw _error;
         }
-      } finally {
-        savedOnFinally.current?.();
       }
     };
 
