@@ -1,6 +1,9 @@
 import { DependencyList, useRef, useEffect, useState } from 'react';
 
 export type UseAsyncOptions<TData = unknown> = {
+  /**
+   * リクエストする非同期関数
+   */
   asyncFn: () => Promise<TData>;
   /**
    * @default []
@@ -13,15 +16,42 @@ export type UseAsyncOptions<TData = unknown> = {
 };
 
 export interface UseAsyncState<TData = unknown, TError = Error> {
+  /**
+   * データ取得の状態
+   *
+   * - `idle`: 初期状態
+   * - `validating`: 検証中 (`isLoading === true`)
+   * - `success`: データ取得に成功した状態
+   * - `error`: データ取得に失敗した状態
+   */
+  status: 'idle' | 'validating' | 'success' | 'error' | 'manually-updated';
+  /**
+   * 非同期関数から取得したデータ
+   */
   data: TData | undefined;
+  /**
+   * リクエストしてから結果が返るまでの間、`true`になる。
+   */
   isValidating: boolean;
+  /**
+   * 発生したエラー
+   */
   error: TError | undefined;
 }
 
 export interface UseAsyncResult<TData = unknown, TError = Error>
   extends UseAsyncState<TData, TError> {
+  /**
+   * 初期状態、つまり`!data && !error`のとき、`true`になる。
+   */
   isLoading: boolean;
-  revalidate: () => Promise<void>;
+  /**
+   * リクエストを手動で実行する。
+   */
+  refresh: () => Promise<void>;
+  /**
+   * 非同期関数をリクエストせずに、手動で`data`を更新する。
+   */
   setData: (nextData: TData) => void;
 }
 
@@ -37,23 +67,34 @@ export function useAsyncFn<TData = unknown, TError = Error>(
   }, [asyncFn]);
 
   const [state, setState] = useState<UseAsyncState<TData, TError>>({
+    status: 'idle',
     data: undefined,
     isValidating: false,
     error: undefined,
   });
 
-  const revalidate = async () => {
+  const refresh = async () => {
     if (!enabled) return;
 
-    setState((prev) => ({ ...prev, isValidating: true }));
+    setState((prev) => ({ ...prev, status: 'validating', isValidating: true }));
 
     try {
       const data = await asyncFnRef.current();
-      setState({ data, isValidating: false, error: undefined });
+      setState({
+        status: 'success',
+        data,
+        isValidating: false,
+        error: undefined,
+      });
     } catch (_error) {
       if (_error instanceof Error) {
         const error = _error as TError;
-        setState((prev) => ({ ...prev, isValidating: false, error }));
+        setState({
+          status: 'error',
+          data: undefined,
+          isValidating: false,
+          error,
+        });
       } else {
         throw _error;
       }
@@ -66,18 +107,32 @@ export function useAsyncFn<TData = unknown, TError = Error>(
     let ignore = false;
 
     const execute = async () => {
-      setState((prev) => ({ ...prev, isValidating: true }));
+      setState((prev) => ({
+        ...prev,
+        status: 'validating',
+        isValidating: true,
+      }));
 
       try {
         const data = await asyncFnRef.current();
         if (!ignore) {
-          setState({ data, isValidating: false, error: undefined });
+          setState({
+            status: 'success',
+            data,
+            isValidating: false,
+            error: undefined,
+          });
         }
       } catch (_error) {
         if (_error instanceof Error) {
           const error = _error as TError;
           if (!ignore) {
-            setState((prev) => ({ ...prev, isValidating: false, error }));
+            setState({
+              status: 'error',
+              data: undefined,
+              isValidating: false,
+              error,
+            });
           }
         } else {
           throw _error;
@@ -96,9 +151,14 @@ export function useAsyncFn<TData = unknown, TError = Error>(
   const result: UseAsyncResult<TData, TError> = {
     ...state,
     isLoading: !state.data && !state.error,
-    revalidate,
+    refresh,
     setData: (nextData: TData) =>
-      setState((prev) => ({ ...prev, data: nextData })),
+      setState({
+        status: 'manually-updated',
+        data: nextData,
+        isValidating: false,
+        error: undefined,
+      }),
   };
 
   return result;
