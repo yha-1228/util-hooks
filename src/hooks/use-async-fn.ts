@@ -20,7 +20,7 @@ export interface UseAsyncState<TData = unknown, TError = Error> {
    * データ取得の状態
    *
    * - `idle`: 初期状態
-   * - `validating`: 検証中 (`isLoading === true`)
+   * - `validating`: 検証中 (`isValidating === true`)
    * - `success`: データ取得に成功した状態
    * - `error`: データ取得に失敗した状態
    */
@@ -42,7 +42,7 @@ export interface UseAsyncState<TData = unknown, TError = Error> {
 export interface UseAsyncResult<TData = unknown, TError = Error>
   extends UseAsyncState<TData, TError> {
   /**
-   * 初期状態、つまり`!data && !error`のとき、`true`になる。
+   * データが未取得であるか (`!data && !error`)
    */
   isLoading: boolean;
   /**
