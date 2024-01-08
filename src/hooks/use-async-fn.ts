@@ -10,10 +10,6 @@ export type UseAsyncOptions<TData = unknown> = {
    * @default true
    */
   enabled?: boolean;
-  /**
-   * @default undefined
-   */
-  initialData?: TData | undefined;
 };
 
 export interface UseAsyncState<TData = unknown, TError = Error> {
@@ -31,12 +27,7 @@ export interface UseAsyncResult<TData = unknown, TError = Error>
 export function useAsyncFn<TData = unknown, TError = Error>(
   options: UseAsyncOptions<TData>
 ): UseAsyncResult<TData, TError> {
-  const {
-    asyncFn,
-    deps = [],
-    enabled = true,
-    initialData = undefined,
-  } = options;
+  const { asyncFn, deps = [], enabled = true } = options;
 
   const asyncFnRef = useRef(asyncFn);
 
@@ -45,7 +36,7 @@ export function useAsyncFn<TData = unknown, TError = Error>(
   }, [asyncFn]);
 
   const [state, setState] = useState<UseAsyncState<TData, TError>>({
-    data: initialData,
+    data: undefined,
     isValidating: false,
     error: undefined,
   });
