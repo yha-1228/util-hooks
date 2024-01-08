@@ -22,6 +22,7 @@ export interface UseAsyncResult<TData = unknown, TError = Error>
   extends UseAsyncState<TData, TError> {
   isLoading: boolean;
   revalidate: () => Promise<void>;
+  setData: (nextData: TData) => void;
 }
 
 export function useAsyncFn<TData = unknown, TError = Error>(
@@ -96,6 +97,8 @@ export function useAsyncFn<TData = unknown, TError = Error>(
     ...state,
     isLoading: !state.data && !state.error,
     revalidate,
+    setData: (nextData: TData) =>
+      setState((prev) => ({ ...prev, data: nextData })),
   };
 
   return result;
