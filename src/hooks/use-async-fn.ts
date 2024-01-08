@@ -92,11 +92,11 @@ export function useAsyncFn<TData = unknown, TError = Error>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enabled, ...deps]);
 
-  const result = {
+  const result: UseAsyncResult<TData, TError> = {
     ...state,
     isLoading: !state.data && !state.error,
     revalidate,
-  } as UseAsyncResult<TData, TError>;
+  };
 
   return result;
 }
